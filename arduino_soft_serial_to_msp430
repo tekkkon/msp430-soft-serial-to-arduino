@@ -1,0 +1,34 @@
+#include <SoftwareSerial.h>
+
+SoftwareSerial mySerial(2, 3); // RX, TX
+char incoming_char;
+
+void setup()  
+{
+  //set pin mode
+  pinMode(2,INPUT);
+  pinMode(3,OUTPUT); 
+  
+  // Open serial communications and wait for port to open:
+  Serial.begin(9600);
+  while (!Serial) {
+    ; // wait for serial port to connect. Needed for Leonardo only
+  }
+
+
+  Serial.println("Goodnight moon!");
+
+  // set the data rate for the SoftwareSerial port
+  mySerial.begin(9600);
+  //mySerial.println("Hello, world?");
+}
+
+void loop() // run over and over
+{
+  if (mySerial.available())
+    Serial.write(mySerial.read());
+  if (Serial.available()){
+    incoming_char = Serial.read();
+    mySerial.print(incoming_char);
+  }
+}
