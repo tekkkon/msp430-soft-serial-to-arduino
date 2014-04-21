@@ -1,0 +1,57 @@
+/*
+  DigitalReadSerial with on-board Pushbutton
+  Reads a digital input on pin 5, prints the result 
+  to the local serial monitor as well as remote arduino's
+  serial monitor! 
+ 
+  Harware Required:
+  MSP4305529 launchpad
+  arduino uno dev board
+  2 jumper wires
+  
+  Connection:
+  msp430 Uart Rx (P1_4) ---- Arduino Uart Tx (Pin 3)  
+  msp430 Uart tx (P1_3) ---- Arduino Uart Rx (Pin 2) 
+  This example code is in the public domain.
+ */
+#include <SoftwareSerial.h>
+// digital pin 5 has a pushbutton attached to it. Give it a name:
+int pushButton = PUSH2;
+
+char incomingByte;   // for incoming serial data
+
+SoftwareSerial mySerial(P1_4, P1_3); // RX, TX
+
+// the setup routine runs once when you press reset:
+void setup() {
+  // initialize serial communication at 9600 bits per second:
+  Serial.begin(9600); // msp430g2231 must use 4800
+  // make the on-board pushbutton's pin an input pullup:
+  pinMode(pushButton, INPUT_PULLUP);
+  
+  //start the soft serial to communicate with external target
+  mySerial.begin(9600);
+}
+
+// the loop routine runs over and over again forever:
+void loop() {
+  // read the input pin:
+  int buttonState = digitalRead(pushButton);
+  // print out the state of the button on both local and remote terminal:
+  if(!buttonState){
+     Serial.print(buttonState);
+     mySerial.print("Hello from msp430! Button State on MSP430 : ");
+     mySerial.print(buttonState);
+     mySerial.println(" ");
+  }
+ 
+  if (mySerial.available()){
+    incomingByte = mySerial.read();
+    Serial.print(incomingByte);
+  }
+  if (Serial.available()){
+    incomingByte = Serial.read();
+    mySerial.write(incomingByte);
+  }
+  
+}
